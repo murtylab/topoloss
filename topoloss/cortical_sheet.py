@@ -44,7 +44,7 @@ def get_cortical_sheet_conv(layer: nn.Conv2d):
 
     return rearrange(
         weight,
-        "(height width) in_channels k k -> height width (in_channels k k)",
+        "(height width) in_channels kernel_height kernel_width -> height width (in_channels kernel_height kernel_width)",
         height=cortical_sheet_size.height,
         width=cortical_sheet_size.width,
     )
