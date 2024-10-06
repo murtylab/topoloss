@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="topoloss",
-    version="0.2.0",
+    version="0.0.0",
     description="topoloss",
     author="Mayukh Deb",
     author_email="mayukh@gatech.edu, mayukhmainak2000@gmail.com",
