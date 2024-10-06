@@ -40,10 +40,10 @@ def laplacian_pyramid_loss(
     
     assert (
         factor_h <= cortical_sheet.shape[2]
-    ), f"Expected factor_h ({factor_h}) to be <= cortical_sheet.shape[1] ({cortical_sheet.shape[2]})"
+    ), f"Expected factor_h ({factor_h}) to be <= cortical_sheet.shape[1] ({cortical_sheet.shape[2]}). For reference, cortical_sheet.shape: {cortical_sheet.shape}"
     assert (
         factor_w <= cortical_sheet.shape[3]
-    ), f"Expected factor_w ({factor_w}) to be <= cortical_sheet.shape[2] ({cortical_sheet.shape[3]})"
+    ), f"Expected factor_w ({factor_w}) to be <= cortical_sheet.shape[2] ({cortical_sheet.shape[3]}). For reference, cortical_sheet.shape: {cortical_sheet.shape}"
     # Downscale the cortical_sheet tensor
     downscaled_cortical_sheet = F.interpolate(
         cortical_sheet, scale_factor=(1 / factor_h, 1 / factor_w), mode="bilinear"
