@@ -1,2 +1,4 @@
 __pycache__/
 topoloss.egg-info/
+build/
+dist/
