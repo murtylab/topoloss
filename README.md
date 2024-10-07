@@ -1,5 +1,8 @@
 # topoloss
-topoloss
+
+Induce brain-like topographic structure in your neural networks
+
+![banner](https://github.com/user-attachments/assets/0b8ae5e0-175a-49ee-a690-1b4f89d9d0fd)
 
 ```bash
 pip install topoloss
