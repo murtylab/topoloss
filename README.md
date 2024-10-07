@@ -1,7 +1,7 @@
 # topoloss
 topoloss
 
-```
+```bash
 pip install topoloss
 ```
 
@@ -31,4 +31,10 @@ topo_loss = TopoLoss(
 loss = topo_loss.compute(model=model)
 loss.backward()
 print(f"Computed topo loss: {loss.item()}")
+```
+
+## Running tests
+
+```bash
+pytest -vvx tests
 ```
