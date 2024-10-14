@@ -17,7 +17,7 @@ class TopoLoss:
             layer, Union[nn.Conv2d, nn.Linear]
         ), f"Expect layer to be either nn.Conv2d or nn.Linear, but got: {type(layer)}"
 
-    def get_layerwise_topo_losses(self, model) -> dict:
+    def get_layerwise_topo_losses(self, model, do_scaling: bool = True) -> dict:
         layer_wise_losses = {}
         for loss_info in self.losses:
             layer = get_layer_by_name(model=model, layer_name=loss_info.layer_name)
@@ -34,17 +34,27 @@ class TopoLoss:
                     factor_h=loss_info.factor_h,
                     factor_w=loss_info.factor_w,
                 )
-                if loss_info.scale is not None:
-                    loss = loss * loss_info.scale
+                if do_scaling:
+                    if loss_info.scale is not None:
+                        loss = loss * loss_info.scale
+                    else:
+                        loss = None
                 else:
-                    loss = None
-
+                    pass
             if loss is not None:
                 layer_wise_losses[loss_info.layer_name] = loss
             else:
                 ## do not backprop if scale is set to None
                 ## scale == None means logging only
                 pass
+        return layer_wise_losses
+
+    def get_wandb_logging_dict(self, model):
+        layer_wise_losses = self.get_layerwise_topo_losses(
+            model=model, do_scaling=False
+        )
+        for key in layer_wise_losses:
+            layer_wise_losses[key] = layer_wise_losses[key].item()
         return layer_wise_losses
 
     def compute(self, model, reduce_mean=True):
