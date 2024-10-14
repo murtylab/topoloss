@@ -17,9 +17,8 @@ class TopoLoss:
             layer, Union[nn.Conv2d, nn.Linear]
         ), f"Expect layer to be either nn.Conv2d or nn.Linear, but got: {type(layer)}"
 
-    def compute(self, model, reduce_mean=True):
+    def get_layerwise_topo_losses(self, model) -> dict:
         layer_wise_losses = {}
-
         for loss_info in self.losses:
             layer = get_layer_by_name(model=model, layer_name=loss_info.layer_name)
             self.check_layer_type(layer=layer)
@@ -46,7 +45,10 @@ class TopoLoss:
                 ## do not backprop if scale is set to None
                 ## scale == None means logging only
                 pass
+        return layer_wise_losses
 
+    def compute(self, model, reduce_mean=True):
+        layer_wise_losses = self.get_layerwise_topo_losses(model=model)
         if reduce_mean:
             loss_values = layer_wise_losses.values()
             return sum(loss_values) / len(loss_values)
