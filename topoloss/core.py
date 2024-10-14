@@ -55,6 +55,11 @@ class TopoLoss:
         )
         for key in layer_wise_losses:
             layer_wise_losses[key] = layer_wise_losses[key].item()
+
+        ## add another item, which is basically the mean of all the other losses
+        layer_wise_losses["mean"] = sum(layer_wise_losses.values()) / len(
+            layer_wise_losses
+        )
         return layer_wise_losses
 
     def compute(self, model, reduce_mean=True):
