@@ -28,36 +28,68 @@ class LaplacianPyramidLoss(BaseModel, extra="forbid"):
             factor_w=factor_w,
         )
 
+import torch.nn.functional as F
+from torchtyping import TensorType
 
-def laplacian_pyramid_loss(
-    cortical_sheet: TensorType["height", "width", "depth"], factor_w: float, factor_h
-):
-    assert (
-        cortical_sheet.ndim == 3
-    ), f"Expected cortical_sheet to have 3 dims, but got: {cortical_sheet.ndim}"
-    cortical_sheet = rearrange(cortical_sheet, "h w e -> e h w").unsqueeze(0)
+from einops import rearrange
+
+
+def laplacian_pyramid_loss(cortical_sheet: TensorType, factor_w: float, factor_h: float):
+    grid = cortical_sheet
+    assert grid.ndim == 3, "Expected grid to be a 3d tensor of shape (h, w, e)"
+    grid = rearrange(grid, "h w e -> e h w").unsqueeze(0)
 
     assert (
-        factor_h <= cortical_sheet.shape[2]
-    ), f"Expected factor_h ({factor_h}) to be <= cortical_sheet.shape[1] ({cortical_sheet.shape[2]}). For reference, cortical_sheet.shape: {cortical_sheet.shape}"
+        factor_h <= grid.shape[1]
+    ), f"Expected factor_h to be <= grid.shape[1] = {grid.shape[1]} but got: {factor_h}"
     assert (
-        factor_w <= cortical_sheet.shape[3]
-    ), f"Expected factor_w ({factor_w}) to be <= cortical_sheet.shape[2] ({cortical_sheet.shape[3]}). For reference, cortical_sheet.shape: {cortical_sheet.shape}"
-    # Downscale the cortical_sheet tensor
-    downscaled_cortical_sheet = F.interpolate(
-        cortical_sheet, scale_factor=(1 / factor_h, 1 / factor_w), mode="bilinear"
+        factor_w <= grid.shape[2]
+    ), f"Expected factor_w to be <= grid.shape[2] = {grid.shape[2]} but got: {factor_w}"
+    # Downscale the grid tensor
+    downscaled_grid = F.interpolate(
+        grid, scale_factor=(1 / factor_h, 1 / factor_w), mode="bilinear"
     )
-    # Upscale the downscaled cortical_sheet tensor
-    upscaled_cortical_sheet = F.interpolate(
-        downscaled_cortical_sheet, size=cortical_sheet.shape[2:], mode="bilinear"
-    )
+    # Upscale the downscaled grid tensor
+    upscaled_grid = F.interpolate(downscaled_grid, size=grid.shape[2:], mode="bilinear")
+        
+    # Calculate the MSE loss between the original grid and upscaled grid
+    # loss = F.mse_loss(upscaled_grid, grid)
 
-    cortical_sheet = rearrange(cortical_sheet.squeeze(0), "e h w -> (h w) e")
-    upscaled_cortical_sheet = rearrange(
-        upscaled_cortical_sheet.squeeze(0), "e h w -> (h w) e"
-    )
-    loss = (
-        1 - F.cosine_similarity(cortical_sheet, upscaled_cortical_sheet, dim=-1).mean()
-    )
+    grid = rearrange(grid.squeeze(0), "e h w -> (h w) e")
+    upscaled_grid = rearrange(upscaled_grid.squeeze(0), "e h w -> (h w) e")
+    loss = 1 - F.cosine_similarity(grid, upscaled_grid, dim=-1).mean()
 
     return loss
+
+# def laplacian_pyramid_loss(
+#     cortical_sheet: TensorType["height", "width", "depth"], factor_w: float, factor_h
+# ):
+#     assert (
+#         cortical_sheet.ndim == 3
+#     ), f"Expected cortical_sheet to have 3 dims, but got: {cortical_sheet.ndim}"
+#     cortical_sheet = rearrange(cortical_sheet, "h w e -> e h w").unsqueeze(0)
+
+#     assert (
+#         factor_h <= cortical_sheet.shape[2]
+#     ), f"Expected factor_h ({factor_h}) to be <= cortical_sheet.shape[1] ({cortical_sheet.shape[2]}). For reference, cortical_sheet.shape: {cortical_sheet.shape}"
+#     assert (
+#         factor_w <= cortical_sheet.shape[3]
+#     ), f"Expected factor_w ({factor_w}) to be <= cortical_sheet.shape[2] ({cortical_sheet.shape[3]}). For reference, cortical_sheet.shape: {cortical_sheet.shape}"
+#     # Downscale the cortical_sheet tensor
+#     downscaled_cortical_sheet = F.interpolate(
+#         cortical_sheet, scale_factor=(1 / factor_h, 1 / factor_w), mode="bilinear"
+#     )
+#     # Upscale the downscaled cortical_sheet tensor
+#     upscaled_cortical_sheet = F.interpolate(
+#         downscaled_cortical_sheet, size=cortical_sheet.shape[2:], mode="bilinear"
+#     )
+
+#     cortical_sheet = rearrange(cortical_sheet.squeeze(0), "e h w -> (h w) e")
+#     upscaled_cortical_sheet = rearrange(
+#         upscaled_cortical_sheet.squeeze(0), "e h w -> (h w) e"
+#     )
+#     loss = (
+#         1 - F.cosine_similarity(cortical_sheet, upscaled_cortical_sheet, dim=-1).mean()
+#     )
+
+#     return loss
