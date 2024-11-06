@@ -19,6 +19,7 @@ model = models.resnet18(pretrained=False)
 
 # define where to apply the topo loss
 topo_loss = TopoLoss(
+    model=model,
     losses=[
         LaplacianPyramidLoss.from_layer(
             model=model,
@@ -31,7 +32,7 @@ topo_loss = TopoLoss(
 )
 
 # Compute the loss
-loss = topo_loss.compute(model=model)
+loss = topo_loss.compute(reduce_mean=True)
 loss.backward()
 print(f"Computed topo loss: {loss.item()}")
 ```

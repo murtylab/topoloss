@@ -20,6 +20,7 @@ def test_loss_conv(
 
     if init_from_layer:
         tl = TopoLoss(
+            model=model,
             losses=[
                 LaplacianPyramidLoss.from_layer(
                     model=model, layer=model[0], scale=1.0, factor_h=3.0, factor_w=3.0
@@ -31,6 +32,7 @@ def test_loss_conv(
         )
     else:
         tl = TopoLoss(
+            model=model,
             losses=[
                 LaplacianPyramidLoss(
                     layer_name="0", scale=1.0, factor_h=3.0, factor_w=3.0
@@ -45,7 +47,7 @@ def test_loss_conv(
     losses = []
 
     for step_idx in range(num_steps):
-        loss = tl.compute(model=model, reduce_mean=True)
+        loss = tl.compute(reduce_mean=True)
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()  # Make sure to reset gradients after each step
