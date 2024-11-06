@@ -27,11 +27,9 @@ def get_weight_cortical_sheet_linear(layer: nn.Linear):
     assert weight.ndim == 2
     cortical_sheet_size = find_cortical_sheet_size(area=num_output_neurons)
 
-    return rearrange(
-        weight,
-        "(height width) n_input -> height width n_input",
-        height=cortical_sheet_size.height,
-        width=cortical_sheet_size.width,
+    ## is this the same as rearrange(weight, "(h w) i -> h w i")?
+    return weight.reshape(
+        cortical_sheet_size.height, cortical_sheet_size.width, weight.shape[1]
     )
 
 
