@@ -12,29 +12,25 @@ pip install topoloss
 
 ```python
 import torchvision.models as models
-from topoloss import TopoLoss, LaplacianPyramidLoss
+from topoloss.core import TopoLoss, TopoLossConfig, LaplacianPyramid
 
-# Load a pre-trained ResNet-18 model
-model = models.resnet18(pretrained=False)
 
-# define where to apply the topo loss
-topo_loss = TopoLoss(
-    model=model,
-    losses=[
-        LaplacianPyramidLoss.from_layer(
-            model=model,
-            layer=model.layer3[1].conv2,
-            factor_h=3.0,
-            factor_w=3.0,
-        )
-        ## add more layers here if you want :)
-    ]
+model = models.resnet18(weights = "DEFAULT")
+config = TopoLossConfig(
+    layer_wise_configs = [
+        LaplacianPyramid(layer_name = 'fc', scale = 1.0, shrink_factor = [3.]),
+    ],
 )
 
-# Compute the loss
-loss = topo_loss.compute(reduce_mean=True)
-loss.backward()
-print(f"Computed topo loss: {loss.item()}")
+loss = TopoLoss(
+    model = model,
+    config = config,
+    device = 'cpu'
+)
+
+print(loss) ## shows basic info about the objective
+print(loss.compute(reduce_mean = True)) ## returns a single number as tensor for backward()
+print(loss.compute(reduce_mean = False)) ## returns a dict with layer names as keys
 ```
 
 ## Running tests
