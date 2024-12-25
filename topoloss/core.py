@@ -5,30 +5,7 @@ import math
 from typing import Tuple
 from dataclasses import dataclass
 
-
-@dataclass
-class GridDimensions2D:
-    width: int
-    height: int
-
-
-def find_rectangle_dimensions(area: int) -> GridDimensions2D:
-    """
-    Find the length and breadth of a rectangle with the least perimeter for a given area.
-
-    Args:
-        area (int): The area of the rectangle.
-
-    Returns:
-        GridDimensions2D: contains the length and breadth of the rectangle.
-    """
-    length = int(math.sqrt(area))  # Starting with a square shape
-    while area % length != 0:
-        length -= 1
-
-    breadth = area // length
-
-    return GridDimensions2D(width=breadth, height=length)
+from .cortical_sheet import GridDimensions2D, find_cortical_sheet_size
 
 import torch.nn as nn
 from functools import reduce
@@ -181,7 +158,7 @@ class LaplacianPyramidLoss:
     ):
 
         output_size = layer.weight.shape[0]
-        grid_size = find_rectangle_dimensions(area=output_size)
+        grid_size = find_cortical_sheet_size(area=output_size)
 
         if isinstance(layer, nn.Linear):
             
