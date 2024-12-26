@@ -4,9 +4,9 @@ import torch.nn.functional as F
 from einops import rearrange
 import torch.nn.functional as F
 from torchtyping import TensorType
-from pydantic import BaseModel, Field
 from typing import Union, Optional
 from ..utils.getting_modules import get_name_by_layer
+from dataclasses import dataclass, field
 
 
 def laplacian_pyramid_loss(
@@ -39,7 +39,8 @@ def laplacian_pyramid_loss(
     return loss
 
 
-class LaplacianPyramid(BaseModel, extra="forbid"):
+@dataclass
+class LaplacianPyramid:
     """
     - `layer_name`: name of layer in model, something like "model.fc1"
     - `scale`: scale by which the loss for this layer is to be multiplied. If None, then will just watch the layer's loss.
@@ -49,7 +50,7 @@ class LaplacianPyramid(BaseModel, extra="forbid"):
     layer_name: str
     factor_h: float
     factor_w: float
-    scale: Optional[Union[None, float]] = Field(default=1.0)
+    scale: Optional[Union[None, float]] = field(default=1.0)
 
     @classmethod
     def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0):
