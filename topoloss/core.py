@@ -1,8 +1,10 @@
 import torch.nn as nn
+from einops import rearrange
+from typing import Union
 from .utils.getting_modules import get_layer_by_name
 from .cortical_sheet.output import get_cortical_sheet_conv, get_cortical_sheet_linear
-from .losses.laplacian_pyramid import laplacian_pyramid_loss, LaplacianPyramid
-from typing import Union
+from .losses.laplacian_pyramid import laplacian_pyramid_loss, LaplacianPyramid, LaplacianPyramidOnBias, laplacian_pyramid_loss_on_bias
+from .cortical_sheet.output import find_cortical_sheet_size
 
 
 class TopoLoss:
@@ -23,12 +25,12 @@ class TopoLoss:
             layer = get_layer_by_name(model=model, layer_name=loss_info.layer_name)
             self.check_layer_type(layer=layer)
 
-            if isinstance(layer, nn.Linear):
-                cortical_sheet = get_cortical_sheet_linear(layer=layer)
-            else:
-                cortical_sheet = get_cortical_sheet_conv(layer=layer)
-
             if isinstance(loss_info, LaplacianPyramid):
+                if isinstance(layer, nn.Linear):
+                    cortical_sheet = get_cortical_sheet_linear(layer=layer)
+                else:
+                    cortical_sheet = get_cortical_sheet_conv(layer=layer)
+
                 loss = laplacian_pyramid_loss(
                     cortical_sheet=cortical_sheet,
                     factor_h=loss_info.factor_h,
@@ -41,6 +43,34 @@ class TopoLoss:
                         loss = None
                 else:
                     pass
+            elif isinstance(loss_info, LaplacianPyramidOnBias):
+                assert isinstance(
+                    layer, nn.Linear
+                ), f"Expected layer to be nn.Linear, but got: {type(layer)}"
+                assert layer.bias is not None,  "Expected layer to have a bias, but got None. *sad sad sad*"
+                
+                size = find_cortical_sheet_size(layer.weight.shape[0])
+                cortical_sheet = rearrange(
+                    layer.bias, 
+                    "(h w)-> h w",
+                    h = size.height,
+                    w = size.width
+                )
+                loss = laplacian_pyramid_loss_on_bias(
+                    cortical_sheet=cortical_sheet,
+                    factor_h=loss_info.factor_h,
+                    factor_w=loss_info.factor_w,
+                )
+
+                
+            if do_scaling:
+                if loss_info.scale is not None:
+                    loss = loss * loss_info.scale
+                else:
+                    loss = None
+            else:
+                pass
+
             if loss is not None:
                 layer_wise_losses[loss_info.layer_name] = loss
             else:
