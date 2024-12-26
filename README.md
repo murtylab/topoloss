@@ -14,7 +14,6 @@ pip install topoloss
 import torchvision.models as models
 from topoloss import TopoLoss, LaplacianPyramid
 
-
 model = models.resnet18(weights = "DEFAULT")
 
 topo_loss = TopoLoss(
