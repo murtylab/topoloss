@@ -3,11 +3,13 @@ from einops import rearrange
 from typing import Union
 from .utils.getting_modules import get_layer_by_name
 from .cortical_sheet.output import get_cortical_sheet_conv, get_cortical_sheet_linear
+from .cortical_sheet.input import get_cortical_sheet_linear_input
 from .losses.laplacian_pyramid import (
     laplacian_pyramid_loss,
     LaplacianPyramid,
-    LaplacianPyramidOnBias,
     laplacian_pyramid_loss_on_bias,
+    LaplacianPyramidOnBias,
+    LaplacianPyramidOnInput
 )
 from .cortical_sheet.output import find_cortical_sheet_size
 
@@ -61,6 +63,17 @@ class TopoLoss:
                     layer.bias, "(h w)-> h w", h=size.height, w=size.width
                 )
                 loss = laplacian_pyramid_loss_on_bias(
+                    cortical_sheet=cortical_sheet,
+                    factor_h=loss_info.factor_h,
+                    factor_w=loss_info.factor_w,
+                )
+
+            elif isinstance(loss_info, LaplacianPyramidOnInput):
+                assert isinstance(
+                    layer, nn.Linear
+                ), f"Expected layer to be nn.Linear, but got: {type(layer)}"
+                cortical_sheet = get_cortical_sheet_linear_input(layer=layer)
+                loss = laplacian_pyramid_loss(
                     cortical_sheet=cortical_sheet,
                     factor_h=loss_info.factor_h,
                     factor_w=loss_info.factor_w,

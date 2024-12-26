@@ -121,3 +121,32 @@ class LaplacianPyramidOnBias:
             factor_h=factor_h,
             factor_w=factor_w,
         )
+
+@dataclass
+class LaplacianPyramidOnInput:
+    """
+    LaplacianPyramid makes the output space of the layer topographic
+    This loss makes the input space topographic.
+
+    - `layer_name`: name of layer in model, something like "model.fc1"
+    - `scale`: scale by which the loss for this layer is to be multiplied. If None, then will just watch the layer's loss.
+    - `shrink_factor`: factor by which the grid is shrinked before it gets resized back to it's original size
+    """
+
+    layer_name: str
+    factor_h: float
+    factor_w: float
+    scale: Optional[Union[None, float]] = field(default=1.0)
+
+    @classmethod
+    def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0):
+        assert (
+            layer.bias is not None
+        ), "Expected layer to have a bias, but got None. *sad sad sad*"
+        layer_name = get_name_by_layer(model=model, layer=layer)
+        return cls(
+            layer_name=layer_name,
+            scale=scale,
+            factor_h=factor_h,
+            factor_w=factor_w,
+        )
