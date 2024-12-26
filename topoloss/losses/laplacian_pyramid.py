@@ -8,10 +8,9 @@ from pydantic import BaseModel, Field
 from typing import Union, Optional
 from ..utils.getting_modules import get_name_by_layer
 
+
 def laplacian_pyramid_loss(
-    cortical_sheet: TensorType["height", "width", "e"], 
-    factor_w: float,
-    factor_h: float
+    cortical_sheet: TensorType["height", "width", "e"], factor_w: float, factor_h: float
 ):
     grid = cortical_sheet
     assert grid.ndim == 3, "Expected grid to be a 3d tensor of shape (h, w, e)"
@@ -37,7 +36,8 @@ def laplacian_pyramid_loss(
     upscaled_grid = rearrange(upscaled_grid.squeeze(0), "e h w -> (h w) e")
     loss = 1 - F.cosine_similarity(grid, upscaled_grid, dim=-1).mean()
 
-    return loss    
+    return loss
+
 
 class LaplacianPyramidLoss(BaseModel, extra="forbid"):
     """

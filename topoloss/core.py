@@ -4,6 +4,7 @@ from .cortical_sheet.output import get_cortical_sheet_conv, get_cortical_sheet_l
 from .losses.laplacian_pyramid import laplacian_pyramid_loss, LaplacianPyramidLoss
 from typing import Union
 
+
 class TopoLoss:
     def __init__(
         self,
@@ -49,9 +50,7 @@ class TopoLoss:
         return layer_wise_losses
 
     def get_wandb_logging_dict(self):
-        layer_wise_losses = self.get_layerwise_topo_losses(
-            do_scaling=False
-        )
+        layer_wise_losses = self.get_layerwise_topo_losses(do_scaling=False)
         for key in layer_wise_losses:
             layer_wise_losses[key] = layer_wise_losses[key].item()
 
@@ -62,7 +61,9 @@ class TopoLoss:
         return layer_wise_losses
 
     def compute(self, model, reduce_mean=True, do_scaling=True):
-        layer_wise_losses = self.get_layerwise_topo_losses(model=model, do_scaling=do_scaling)
+        layer_wise_losses = self.get_layerwise_topo_losses(
+            model=model, do_scaling=do_scaling
+        )
         if reduce_mean:
             loss_values = layer_wise_losses.values()
             return sum(loss_values) / len(loss_values)

@@ -1,6 +1,7 @@
 import math
 from dataclasses import dataclass
 
+
 @dataclass
 class GridDimensions2D:
     width: int
