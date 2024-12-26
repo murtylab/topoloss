@@ -1,7 +1,7 @@
+from topoloss import TopoLoss, LaplacianPyramidLoss
+import pytest
 import torch.nn as nn
 import torch.optim as optim
-from topoloss import TopoLoss, TopoLossConfig, LaplacianPyramid
-import pytest
 
 # Define the fixture that provides the num_steps argument
 @pytest.mark.parametrize("num_steps", [2, 9])
@@ -19,27 +19,24 @@ def test_loss_conv(
     )
     model.requires_grad_(True)
 
-    # Define the TopoLossConfig
     if init_from_layer:
-        config = TopoLossConfig(
-            layer_wise_configs=[
-                LaplacianPyramid(layer_name="0", scale=1.0, shrink_factor=[3.0]),
-                LaplacianPyramid(layer_name="2", scale=1.0, shrink_factor=[3.0]),
-            ]
-        )
+        losses = [
+            LaplacianPyramidLoss.from_layer(
+                model=model, layer=model[0], scale=1.0, factor_h=3.0, factor_w=3.0
+            ),
+            LaplacianPyramidLoss.from_layer(
+                model=model, layer=model[2], scale=1.0, factor_h=3.0, factor_w=3.0
+            ),
+        ]
     else:
-        config = TopoLossConfig(
-            layer_wise_configs=[
-                LaplacianPyramid(layer_name="0", scale=1.0, shrink_factor=[3.0]),
-                LaplacianPyramid(layer_name="2", scale=1.0, shrink_factor=[3.0]),
-            ]
-        )
+        losses = [
+            LaplacianPyramidLoss(layer_name="0", scale=1.0, factor_h=3.0, factor_w=3.0),
+            LaplacianPyramidLoss(layer_name="2", scale=1.0, factor_h=3.0, factor_w=3.0),
+        ]
 
     # Define the TopoLoss
     tl = TopoLoss(
-        model=model,
-        config=config,
-        device="cpu",
+        losses=losses,
     )
 
     # Define optimizer
@@ -48,7 +45,7 @@ def test_loss_conv(
 
     # Training loop
     for step_idx in range(num_steps):
-        loss = tl.compute(reduce_mean=True)
+        loss = tl.compute(reduce_mean=True, model=model)
         loss.backward()
         optimizer.step()
         optimizer.zero_grad()  # Reset gradients after each step
