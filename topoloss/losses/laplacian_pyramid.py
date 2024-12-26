@@ -62,13 +62,14 @@ class LaplacianPyramid:
             factor_w=factor_w,
         )
 
+
 def laplacian_pyramid_loss_on_bias(
     cortical_sheet: TensorType["h", "w"], factor_w: float, factor_h: float
 ):
 
     grid = cortical_sheet
     assert grid.ndim == 2, "Expected grid to be a 2d tensor of shape (h, w)"
-    
+
     assert (
         factor_h <= grid.shape[0]
     ), f"Expected factor_h to be <= grid.shape[1] = {grid.shape[1]} but got: {factor_h}"
@@ -86,11 +87,14 @@ def laplacian_pyramid_loss_on_bias(
     upscaled_grid = F.interpolate(downscaled_grid, size=grid.shape[2:], mode="bilinear")
 
     grid = rearrange(grid.squeeze(0).squeeze(0), "h w -> (h w)").unsqueeze(0)
-    upscaled_grid = rearrange(upscaled_grid.squeeze(0).squeeze(0), "h w -> (h w)").unsqueeze(0)
+    upscaled_grid = rearrange(
+        upscaled_grid.squeeze(0).squeeze(0), "h w -> (h w)"
+    ).unsqueeze(0)
 
-    loss = 1-F.cosine_similarity(upscaled_grid, grid).mean()
+    loss = 1 - F.cosine_similarity(upscaled_grid, grid).mean()
 
     return loss
+
 
 @dataclass
 class LaplacianPyramidOnBias:
@@ -107,7 +111,9 @@ class LaplacianPyramidOnBias:
 
     @classmethod
     def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0):
-        assert layer.bias is not None, "Expected layer to have a bias, but got None. *sad sad sad*"
+        assert (
+            layer.bias is not None
+        ), "Expected layer to have a bias, but got None. *sad sad sad*"
         layer_name = get_name_by_layer(model=model, layer=layer)
         return cls(
             layer_name=layer_name,

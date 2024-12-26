@@ -3,6 +3,7 @@ import pytest
 import torch.nn as nn
 import torch.optim as optim
 
+
 # Define the fixture that provides the num_steps argument
 @pytest.mark.parametrize("num_steps", [2, 9])
 @pytest.mark.parametrize("hidden_channels", [16, 32])

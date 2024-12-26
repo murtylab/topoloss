@@ -55,6 +55,7 @@ def test_loss_linear_weight(
         losses[-1] < losses[0]
     ), f"Expected loss to go down for {num_steps} training steps, but it did not. \x1B[3msad sad sad\x1B[23m"
 
+
 # Define the fixture that provides the num_steps argument
 @pytest.mark.parametrize("num_steps", [2, 9])
 @pytest.mark.parametrize("hidden_size", [30, 25])
@@ -80,8 +81,12 @@ def test_loss_linear_bias(
         ]
     else:
         losses = [
-            LaplacianPyramidOnBias(layer_name="0", scale=1.0, factor_h=2.0, factor_w=2.0),
-            LaplacianPyramidOnBias(layer_name="2", scale=1.0, factor_h=2.0, factor_w=2.0),
+            LaplacianPyramidOnBias(
+                layer_name="0", scale=1.0, factor_h=2.0, factor_w=2.0
+            ),
+            LaplacianPyramidOnBias(
+                layer_name="2", scale=1.0, factor_h=2.0, factor_w=2.0
+            ),
         ]
 
     # Define the TopoLoss

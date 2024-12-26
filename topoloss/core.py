@@ -3,7 +3,12 @@ from einops import rearrange
 from typing import Union
 from .utils.getting_modules import get_layer_by_name
 from .cortical_sheet.output import get_cortical_sheet_conv, get_cortical_sheet_linear
-from .losses.laplacian_pyramid import laplacian_pyramid_loss, LaplacianPyramid, LaplacianPyramidOnBias, laplacian_pyramid_loss_on_bias
+from .losses.laplacian_pyramid import (
+    laplacian_pyramid_loss,
+    LaplacianPyramid,
+    LaplacianPyramidOnBias,
+    laplacian_pyramid_loss_on_bias,
+)
 from .cortical_sheet.output import find_cortical_sheet_size
 
 
@@ -47,14 +52,13 @@ class TopoLoss:
                 assert isinstance(
                     layer, nn.Linear
                 ), f"Expected layer to be nn.Linear, but got: {type(layer)}"
-                assert layer.bias is not None,  "Expected layer to have a bias, but got None. *sad sad sad*"
-                
+                assert (
+                    layer.bias is not None
+                ), "Expected layer to have a bias, but got None. *sad sad sad*"
+
                 size = find_cortical_sheet_size(layer.weight.shape[0])
                 cortical_sheet = rearrange(
-                    layer.bias, 
-                    "(h w)-> h w",
-                    h = size.height,
-                    w = size.width
+                    layer.bias, "(h w)-> h w", h=size.height, w=size.width
                 )
                 loss = laplacian_pyramid_loss_on_bias(
                     cortical_sheet=cortical_sheet,
@@ -62,7 +66,6 @@ class TopoLoss:
                     factor_w=loss_info.factor_w,
                 )
 
-                
             if do_scaling:
                 if loss_info.scale is not None:
                     loss = loss * loss_info.scale
