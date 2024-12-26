@@ -16,7 +16,6 @@ setuptools.setup(
     install_requires=[
         "einops",
         "torchtyping",
-        "pydantic",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
