@@ -2,3 +2,4 @@ __pycache__/
 topoloss.egg-info/
 build/
 dist/
+.pytest_cache/
