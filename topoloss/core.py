@@ -1,14 +1,14 @@
 import torch.nn as nn
 from .utils.getting_modules import get_layer_by_name
 from .cortical_sheet.output import get_cortical_sheet_conv, get_cortical_sheet_linear
-from .losses.laplacian_pyramid import laplacian_pyramid_loss, LaplacianPyramidLoss
+from .losses.laplacian_pyramid import laplacian_pyramid_loss, LaplacianPyramid
 from typing import Union
 
 
 class TopoLoss:
     def __init__(
         self,
-        losses: list[Union[LaplacianPyramidLoss]],
+        losses: list[Union[LaplacianPyramid]],
     ):
         self.losses = losses
 
@@ -28,7 +28,7 @@ class TopoLoss:
             else:
                 cortical_sheet = get_cortical_sheet_conv(layer=layer)
 
-            if isinstance(loss_info, LaplacianPyramidLoss):
+            if isinstance(loss_info, LaplacianPyramid):
                 loss = laplacian_pyramid_loss(
                     cortical_sheet=cortical_sheet,
                     factor_h=loss_info.factor_h,

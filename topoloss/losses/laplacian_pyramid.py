@@ -39,7 +39,7 @@ def laplacian_pyramid_loss(
     return loss
 
 
-class LaplacianPyramidLoss(BaseModel, extra="forbid"):
+class LaplacianPyramid(BaseModel, extra="forbid"):
     """
     - `layer_name`: name of layer in model, something like "model.fc1"
     - `scale`: scale by which the loss for this layer is to be multiplied. If None, then will just watch the layer's loss.

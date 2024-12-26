@@ -1,4 +1,4 @@
-from topoloss import TopoLoss, LaplacianPyramidLoss
+from topoloss import TopoLoss, LaplacianPyramid
 import pytest
 import torch.nn as nn
 import torch.optim as optim
@@ -21,17 +21,17 @@ def test_loss_conv(
 
     if init_from_layer:
         losses = [
-            LaplacianPyramidLoss.from_layer(
+            LaplacianPyramid.from_layer(
                 model=model, layer=model[0], scale=1.0, factor_h=3.0, factor_w=3.0
             ),
-            LaplacianPyramidLoss.from_layer(
+            LaplacianPyramid.from_layer(
                 model=model, layer=model[2], scale=1.0, factor_h=3.0, factor_w=3.0
             ),
         ]
     else:
         losses = [
-            LaplacianPyramidLoss(layer_name="0", scale=1.0, factor_h=3.0, factor_w=3.0),
-            LaplacianPyramidLoss(layer_name="2", scale=1.0, factor_h=3.0, factor_w=3.0),
+            LaplacianPyramid(layer_name="0", scale=1.0, factor_h=3.0, factor_w=3.0),
+            LaplacianPyramid(layer_name="2", scale=1.0, factor_h=3.0, factor_w=3.0),
         ]
 
     # Define the TopoLoss

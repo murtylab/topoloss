@@ -1,1 +1,1 @@
-from .core import TopoLoss, LaplacianPyramidLoss
+from .core import TopoLoss, LaplacianPyramid
