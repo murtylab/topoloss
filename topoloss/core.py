@@ -95,8 +95,8 @@ class TopoLoss:
                 pass
         return layer_wise_losses
 
-    def get_wandb_logging_dict(self):
-        layer_wise_losses = self.get_layerwise_topo_losses(do_scaling=False)
+    def get_wandb_logging_dict(self, model: nn.Module):
+        layer_wise_losses = self.get_layerwise_topo_losses(do_scaling=False, model=model)
         for key in layer_wise_losses:
             layer_wise_losses[key] = layer_wise_losses[key].item()
 
