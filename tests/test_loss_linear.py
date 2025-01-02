@@ -7,7 +7,7 @@ import torch.optim as optim
 supported_dtypes = [
     torch.float32,
     torch.float16,
-    #torch.bfloat16,
+    # torch.bfloat16, ### tests fail on bfloat16
 ]
 
 # Define the fixture that provides the num_steps argument
