@@ -10,9 +10,9 @@ from dataclasses import dataclass, field
 import torch
 
 def laplacian_pyramid_loss(
-    cortical_sheet: TensorType["height", "width", "e"], factor_w: float, factor_h: float, dtype=torch.float32
+    cortical_sheet: TensorType["height", "width", "e"], factor_w: float, factor_h: float
 ):
-    grid = cortical_sheet.to(dtype=dtype)
+    grid = cortical_sheet
     assert grid.ndim == 3, "Expected grid to be a 3d tensor of shape (h, w, e)"
     grid = rearrange(grid, "h w e -> e h w").unsqueeze(0)
 

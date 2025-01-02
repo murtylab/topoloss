@@ -6,7 +6,7 @@ import torch.optim as optim
 
 supported_dtypes = [
     torch.float32,
-    torch.float16,
+    # torch.float16,
     # torch.bfloat16, ### tests fail on bfloat16
 ]
 

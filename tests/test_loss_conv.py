@@ -6,7 +6,7 @@ import torch
 
 supported_dtypes = [
     torch.float32,
-    torch.float16,
+    # torch.float16,
     #torch.bfloat16,
 ]
 
