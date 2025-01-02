@@ -2,14 +2,21 @@ from topoloss import TopoLoss, LaplacianPyramid
 import pytest
 import torch.nn as nn
 import torch.optim as optim
+import torch
 
+supported_dtypes = [
+    torch.float32,
+    torch.float16,
+    #torch.bfloat16,
+]
 
 # Define the fixture that provides the num_steps argument
 @pytest.mark.parametrize("num_steps", [2, 9])
 @pytest.mark.parametrize("hidden_channels", [16, 32])
 @pytest.mark.parametrize("init_from_layer", [True, False])
+@pytest.mark.parametrize("dtype", supported_dtypes)
 def test_loss_conv(
-    num_steps: int, hidden_channels: int, init_from_layer: bool
+    num_steps: int, hidden_channels: int, init_from_layer: bool, dtype
 ):  # num_steps is now passed by the fixture
 
     # Define the model
@@ -17,7 +24,7 @@ def test_loss_conv(
         nn.Conv2d(3, hidden_channels, kernel_size=3, padding=1),  # Conv layer 0
         nn.ReLU(),
         nn.Conv2d(hidden_channels, 12, kernel_size=3, padding=1),  # Conv layer 2
-    )
+    ).to(dtype=dtype)
     model.requires_grad_(True)
 
     if init_from_layer:

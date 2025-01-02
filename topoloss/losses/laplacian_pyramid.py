@@ -7,12 +7,12 @@ from torchtyping import TensorType
 from typing import Union, Optional
 from ..utils.getting_modules import get_name_by_layer
 from dataclasses import dataclass, field
-
+import torch
 
 def laplacian_pyramid_loss(
-    cortical_sheet: TensorType["height", "width", "e"], factor_w: float, factor_h: float
+    cortical_sheet: TensorType["height", "width", "e"], factor_w: float, factor_h: float, dtype=torch.float32
 ):
-    grid = cortical_sheet
+    grid = cortical_sheet.to(dtype=dtype)
     assert grid.ndim == 3, "Expected grid to be a 3d tensor of shape (h, w, e)"
     grid = rearrange(grid, "h w e -> e h w").unsqueeze(0)
 
