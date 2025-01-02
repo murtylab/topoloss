@@ -43,13 +43,6 @@ class TopoLoss:
                     factor_h=loss_info.factor_h,
                     factor_w=loss_info.factor_w,
                 )
-                if do_scaling:
-                    if loss_info.scale is not None:
-                        loss = loss * loss_info.scale
-                    else:
-                        loss = None
-                else:
-                    pass
             elif isinstance(loss_info, LaplacianPyramidOnBias):
                 assert isinstance(
                     layer, nn.Linear
