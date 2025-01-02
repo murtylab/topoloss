@@ -62,4 +62,4 @@ def test_loss_conv(
     # Assertion to verify loss decreases
     assert (
         losses[-1] < losses[0]
-    ), f"Expected loss to go down for {num_steps} training steps, but it did not. \x1B[3msad sad sad\x1B[23m"
+    ), f"Expected loss to go down for {num_steps} training steps for dtype: {dtype}, but it did not. \x1B[3msad sad sad\x1B[23m"
