@@ -28,7 +28,7 @@ def test_laplacian_pyramid_loss_precision(dtype1, dtype2, height, width, factor_
     assert torch.isfinite(loss), f"Loss is not finite for dtype {dtype1}"
     
     # Check type consistency
-    assert loss.dtype == dtype1, f"Loss dtype {loss.dtype} does not match input dtype {dtype1}"
+    assert loss.dtype == dtype1, f"Loss dtype {loss.dtype} does not match input dtype {dtype1}."
 
     # Compare results to float32 (considered ground truth for higher precision)
     if dtype1 !=dtype2:
@@ -36,5 +36,5 @@ def test_laplacian_pyramid_loss_precision(dtype1, dtype2, height, width, factor_
         expected_loss = laplacian_pyramid_loss(float32_sheet, factor_w, factor_h, dtype=dtype2)
         assert_close(
         loss.to(dtype2), expected_loss, rtol=1e-3, atol=1e-4,
-            msg=f"Loss mismatch for dtype1 {dtype1} and dtype2 {dtype2}"
+            msg=f"Loss mismatch for dtype1 {dtype1} loss: {loss.to(dtype2)} and dtype2 {dtype2} loss2: {expected_loss}"
         )
