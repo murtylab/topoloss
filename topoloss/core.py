@@ -1,6 +1,8 @@
+import os
 import torch.nn as nn
 from einops import rearrange
 from typing import Union
+import json
 from .utils.getting_modules import get_layer_by_name
 from .cortical_sheet.output import get_cortical_sheet_conv, get_cortical_sheet_linear
 from .cortical_sheet.input import get_cortical_sheet_linear_input
@@ -108,3 +110,27 @@ class TopoLoss:
             return sum(loss_values) / len(loss_values)
         else:
             return layer_wise_losses
+
+    def save_json(self, filename: str):
+
+        data = []
+        for loss in self.losses:
+            d = loss.__dict__
+            d['name'] = loss.__class__.__name__
+            data.append(d)
+
+        with open(filename, "w") as f:
+            json.dump(data, f, indent=4)
+        
+    @classmethod
+    def from_json(cls, filename: str):
+        assert os.path.exists(filename), f"File not found: {filename}"
+        with open(filename, "r") as f:
+            data = json.load(f)
+        assert isinstance(data, list), f"Expected data to be a list but got: {type(data)}"
+        losses = []
+        for d in data:
+            name = d.pop("name")
+            losses.append(globals()[name](**d))
+        return cls(losses=losses)
+        
