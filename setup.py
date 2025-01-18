@@ -7,7 +7,7 @@ setuptools.setup(
     name="topoloss",
     version="0.0.0",
     description="topoloss",
-    author="Mayukh Deb, Mainak Deb, N. A. Apurva Ratan Murty",
+    author="Mayukh Deb, Mainak Deb, N. Apurva Ratan Murty",
     author_email="mayukhmainak2000@gmail.com, mayukh@gatech.edu",
     long_description=long_description,
     long_description_content_type="text/markdown",
