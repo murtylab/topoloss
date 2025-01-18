@@ -3,6 +3,18 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+"""
+release checklist:
+1. update version on `setup.py`
+2. run tests with this command `pytest -vvx tests/`
+4. commit changes (`setup.py`) and push
+5. make release on PyPI. Run the following commands:
+    5.1 `python3 setup.py sdist bdist_wheel`
+    5.2 (optional) `python3 -m pip install --user --upgrade twine`
+    5.3 `python3 -m twine upload dist/*`
+6. make a new release on github with the latest version
+"""
+
 setuptools.setup(
     name="topoloss",
     version="0.0.0",
