@@ -21,9 +21,12 @@ topo_loss = TopoLoss(
         LaplacianPyramid(layer_name = 'fc',factor_h=3.0, factor_w=3.0),
     ],
 )
+loss = topo_loss.compute(model=model)
+## >>> tensor(0.8407, grad_fn=<DivBackward0>)
+loss.backward()
 
-print(topo_loss.compute(model=model, reduce_mean = True)) ## returns a single number as tensor for backward()
-print(topo_loss.compute(model=model, reduce_mean = False)) ## returns a dict with layer names as keys
+loss_dict = topo_loss.compute(model=model, reduce_mean = False) ## {"fc": }
+## >>> {'fc': tensor(0.8407, grad_fn=<MulBackward0>)}
 ```
 
 ## Running tests
