@@ -17,7 +17,7 @@ release checklist:
 
 setuptools.setup(
     name="topoloss",
-    version="0.0.0",
+    version="0.0.1",
     description="topoloss",
     author="Mayukh Deb, Mainak Deb, N. Apurva Ratan Murty",
     author_email="mayukhmainak2000@gmail.com, mayukh@gatech.edu",
