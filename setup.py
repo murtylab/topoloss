@@ -13,6 +13,8 @@ release checklist:
     5.2 (optional) `python3 -m pip install --user --upgrade twine`
     5.3 `python3 -m twine upload dist/*`
 6. make a new release on github with the latest version
+    6.1 git tag v0.0.1 ## or your version name
+    6.2 git push origin v0.0.1
 """
 
 setuptools.setup(
