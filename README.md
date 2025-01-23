@@ -18,7 +18,13 @@ model = models.resnet18(weights = "DEFAULT")
 
 topo_loss = TopoLoss(
     losses = [
-        LaplacianPyramid(layer_name = 'fc',factor_h=3.0, factor_w=3.0),
+        LaplacianPyramid.from_layer(
+            model=model,
+            layer = model.fc,
+            factor_h=3.0, 
+            factor_w=3.0, 
+            scale = 1.0
+        ),
     ],
 )
 loss = topo_loss.compute(model=model)
