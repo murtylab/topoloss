@@ -1,6 +1,6 @@
 # topoloss
 
-Induce brain-like topographic structure in your neural networks. Read the paper [here](https://arxiv.org/abs/2501.16396)
+Induce brain-like topographic structure in your neural networks. Read the paper [here](https://arxiv.org/abs/2501.16396) and check out the[ colab demo](https://colab.research.google.com/github/toponets/toponets.github.io/blob/main/notebooks/topoloss-demo.ipynb)
 
 ![banner](https://github.com/user-attachments/assets/0b8ae5e0-175a-49ee-a690-1b4f89d9d0fd)
 
