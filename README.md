@@ -20,7 +20,7 @@ topo_loss = TopoLoss(
     losses = [
         LaplacianPyramid.from_layer(
             model=model,
-            layer = model.fc,
+            layer = model.fc, ## supports nn.Linear and nn.Conv2d
             factor_h=3.0, 
             factor_w=3.0, 
             scale = 1.0
