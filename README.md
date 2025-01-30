@@ -4,7 +4,7 @@ Induce brain-like topographic structure in your neural networks.
 
 ![banner](https://github.com/user-attachments/assets/0b8ae5e0-175a-49ee-a690-1b4f89d9d0fd)
 
-Read the [paper](https://arxiv.org/abs/2501.16396) and check out the [colab notebook](https://colab.research.google.com/github/toponets/toponets.github.io/blob/main/notebooks/topoloss-demo.ipynb)
+Read the [paper](https://arxiv.org/abs/2501.16396) (ICLR 2025), check out the [colab notebook](https://colab.research.google.com/github/toponets/toponets.github.io/blob/main/notebooks/topoloss-demo.ipynb) and play with the [pre-trained models](https://github.com/toponets/toponets) 🤗
 
 ```bash
 pip install topoloss
