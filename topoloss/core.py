@@ -1,3 +1,4 @@
+from __future__ import annotations 
 import os
 import torch.nn as nn
 from einops import rearrange
@@ -14,7 +15,6 @@ from .losses.laplacian_pyramid import (
     LaplacianPyramidOnInput
 )
 from .cortical_sheet.output import find_cortical_sheet_size
-
 
 class TopoLoss:
     def __init__(
