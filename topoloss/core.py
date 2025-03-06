@@ -44,6 +44,7 @@ class TopoLoss:
                     cortical_sheet=cortical_sheet,
                     factor_h=loss_info.factor_h,
                     factor_w=loss_info.factor_w,
+                    interpolation=loss_info.interpolation,
                 )
             elif isinstance(loss_info, LaplacianPyramidOnBias):
                 assert isinstance(
@@ -61,6 +62,7 @@ class TopoLoss:
                     cortical_sheet=cortical_sheet,
                     factor_h=loss_info.factor_h,
                     factor_w=loss_info.factor_w,
+                    interpolation=loss_info.interpolation,
                 )
 
             elif isinstance(loss_info, LaplacianPyramidOnInput):
@@ -72,6 +74,7 @@ class TopoLoss:
                     cortical_sheet=cortical_sheet,
                     factor_h=loss_info.factor_h,
                     factor_w=loss_info.factor_w,
+                    interpolation=loss_info.interpolation,
                 )
 
             if do_scaling:

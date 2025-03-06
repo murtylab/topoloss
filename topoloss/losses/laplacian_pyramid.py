@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 import torch
 
 def laplacian_pyramid_loss(
-    cortical_sheet: TensorType["height", "width", "e"], factor_w: float, factor_h: float
+    cortical_sheet: TensorType["height", "width", "e"], factor_w: float, factor_h: float, interpolation: str = "bilinear"
 ):
     grid = cortical_sheet
     assert grid.ndim == 3, "Expected grid to be a 3d tensor of shape (h, w, e)"
@@ -24,10 +24,10 @@ def laplacian_pyramid_loss(
     ), f"Expected factor_w to be <= grid.shape[2] = {grid.shape[2]} but got: {factor_w}"
     # Downscale the grid tensor
     downscaled_grid = F.interpolate(
-        grid, scale_factor=(1 / factor_h, 1 / factor_w), mode="bilinear"
+        grid, scale_factor=(1 / factor_h, 1 / factor_w), mode=interpolation
     )
     # Upscale the downscaled grid tensor
-    upscaled_grid = F.interpolate(downscaled_grid, size=grid.shape[2:], mode="bilinear")
+    upscaled_grid = F.interpolate(downscaled_grid, size=grid.shape[2:], mode=interpolation)
 
     # Calculate the MSE loss between the original grid and upscaled grid
     # loss = F.mse_loss(upscaled_grid, grid)
@@ -50,21 +50,23 @@ class LaplacianPyramid:
     layer_name: str
     factor_h: float
     factor_w: float
+    interpolation: str = "bilinear"
     scale: Optional[Union[None, float]] = field(default=1.0)
 
     @classmethod
-    def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0):
+    def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0, interpolation: str ="bilinear"):
         layer_name = get_name_by_layer(model=model, layer=layer)
         return cls(
             layer_name=layer_name,
             scale=scale,
             factor_h=factor_h,
             factor_w=factor_w,
+            interpolation=interpolation
         )
 
 
 def laplacian_pyramid_loss_on_bias(
-    cortical_sheet: TensorType["h", "w"], factor_w: float, factor_h: float
+    cortical_sheet: TensorType["h", "w"], factor_w: float, factor_h: float, interpolation: str = "bilinear"
 ):
 
     grid = cortical_sheet
@@ -81,10 +83,10 @@ def laplacian_pyramid_loss_on_bias(
     grid = grid.unsqueeze(0).unsqueeze(0)
     # Downscale the grid tensor
     downscaled_grid = F.interpolate(
-        grid, scale_factor=(1 / factor_h, 1 / factor_w), mode="bilinear"
+        grid, scale_factor=(1 / factor_h, 1 / factor_w), mode=interpolation
     )
     # Upscale the downscaled grid tensor
-    upscaled_grid = F.interpolate(downscaled_grid, size=grid.shape[2:], mode="bilinear")
+    upscaled_grid = F.interpolate(downscaled_grid, size=grid.shape[2:], mode=interpolation)
 
     grid = rearrange(grid.squeeze(0).squeeze(0), "h w -> (h w)").unsqueeze(0)
     upscaled_grid = rearrange(
@@ -107,10 +109,11 @@ class LaplacianPyramidOnBias:
     layer_name: str
     factor_h: float
     factor_w: float
+    interpolation: str = "bilinear"
     scale: Optional[Union[None, float]] = field(default=1.0)
 
     @classmethod
-    def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0):
+    def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0, interpolation: str ="bilinear"):
         assert (
             layer.bias is not None
         ), "Expected layer to have a bias, but got None. *sad sad sad*"
@@ -120,6 +123,7 @@ class LaplacianPyramidOnBias:
             scale=scale,
             factor_h=factor_h,
             factor_w=factor_w,
+            interpolation=interpolation
         )
 
 @dataclass
@@ -136,10 +140,11 @@ class LaplacianPyramidOnInput:
     layer_name: str
     factor_h: float
     factor_w: float
+    interpolation: str = "bilinear"
     scale: Optional[Union[None, float]] = field(default=1.0)
 
     @classmethod
-    def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0):
+    def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0, interpolation: str ="bilinear"):
         assert (
             layer.bias is not None
         ), "Expected layer to have a bias, but got None. *sad sad sad*"
@@ -149,4 +154,5 @@ class LaplacianPyramidOnInput:
             scale=scale,
             factor_h=factor_h,
             factor_w=factor_w,
+            interpolation=interpolation
         )
