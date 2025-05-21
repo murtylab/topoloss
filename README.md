@@ -1,4 +1,4 @@
-# topoloss
+# TopoLoss
 
 Induce brain-like topographic structure in your neural networks. 
 
