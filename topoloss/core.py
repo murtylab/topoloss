@@ -24,9 +24,8 @@ class TopoLoss:
         self.losses = losses
 
     def check_layer_type(self, layer):
-        assert isinstance(
-            layer, (nn.Conv2d, nn.Linear)
-        ), f"Expect layer to be either nn.Conv2d or nn.Linear, but got: {type(layer)}"
+        assert isinstance(layer, nn.Conv2d) or isinstance(layer, nn.Linear), f"Expect layer to be either nn.Conv2d or nn.Linear, but got: {type(layer)}"
+
 
     def get_layerwise_topo_losses(self, model, do_scaling: bool = True) -> dict:
         layer_wise_losses = {}
