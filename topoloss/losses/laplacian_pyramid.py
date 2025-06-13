@@ -145,9 +145,6 @@ class LaplacianPyramidOnInput:
 
     @classmethod
     def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0, interpolation: str ="bilinear"):
-        assert (
-            layer.bias is not None
-        ), "Expected layer to have a bias, but got None. *sad sad sad*"
         layer_name = get_name_by_layer(model=model, layer=layer)
         return cls(
             layer_name=layer_name,
