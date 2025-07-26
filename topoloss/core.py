@@ -69,9 +69,10 @@ class TopoLoss:
                 )
 
             elif isinstance(loss_info, LaplacianPyramidOnInput):
-                assert isinstance(
-                    layer, nn.Linear
-                ), f"Expected layer to be nn.Linear, but got: {type(layer)}"
+                if self.strict_layer_type is True:
+                    assert isinstance(
+                        layer, nn.Linear
+                    ), f"Expected layer to be nn.Linear, but got: {type(layer)}"
                 cortical_sheet = get_cortical_sheet_linear_input(layer=layer)
                 loss = laplacian_pyramid_loss(
                     cortical_sheet=cortical_sheet,
