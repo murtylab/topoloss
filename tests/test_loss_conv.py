@@ -7,8 +7,9 @@ import torch
 supported_dtypes = [
     torch.float32,
     # torch.float16,
-    #torch.bfloat16,
+    # torch.bfloat16,
 ]
+
 
 # Define the fixture that provides the num_steps argument
 @pytest.mark.parametrize("num_steps", [2, 9])
@@ -17,7 +18,11 @@ supported_dtypes = [
 @pytest.mark.parametrize("dtype", supported_dtypes)
 @pytest.mark.parametrize("interpolation", ["bilinear", "nearest"])
 def test_loss_conv(
-    num_steps: int, hidden_channels: int, init_from_layer: bool, dtype, interpolation: str
+    num_steps: int,
+    hidden_channels: int,
+    init_from_layer: bool,
+    dtype,
+    interpolation: str,
 ):  # num_steps is now passed by the fixture
 
     # Define the model
@@ -31,16 +36,38 @@ def test_loss_conv(
     if init_from_layer:
         losses = [
             LaplacianPyramid.from_layer(
-                model=model, layer=model[0], scale=1.0, factor_h=3.0, factor_w=3.0, interpolation=interpolation
+                model=model,
+                layer=model[0],
+                scale=1.0,
+                factor_h=3.0,
+                factor_w=3.0,
+                interpolation=interpolation,
             ),
             LaplacianPyramid.from_layer(
-                model=model, layer=model[2], scale=1.0, factor_h=3.0, factor_w=3.0, interpolation=interpolation
+                model=model,
+                layer=model[2],
+                scale=1.0,
+                factor_h=3.0,
+                factor_w=3.0,
+                interpolation=interpolation,
             ),
         ]
     else:
         losses = [
-            LaplacianPyramid(layer_name="0", scale=1.0, factor_h=3.0, factor_w=3.0, interpolation=interpolation),
-            LaplacianPyramid(layer_name="2", scale=1.0, factor_h=3.0, factor_w=3.0, interpolation=interpolation),
+            LaplacianPyramid(
+                layer_name="0",
+                scale=1.0,
+                factor_h=3.0,
+                factor_w=3.0,
+                interpolation=interpolation,
+            ),
+            LaplacianPyramid(
+                layer_name="2",
+                scale=1.0,
+                factor_h=3.0,
+                factor_w=3.0,
+                interpolation=interpolation,
+            ),
         ]
 
     # Define the TopoLoss

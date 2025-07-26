@@ -1,1 +1,6 @@
-from .core import TopoLoss, LaplacianPyramid, LaplacianPyramidOnBias, LaplacianPyramidOnInput
+from .core import (
+    TopoLoss,
+    LaplacianPyramid,
+    LaplacianPyramidOnBias,
+    LaplacianPyramidOnInput,
+)

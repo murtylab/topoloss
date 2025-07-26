@@ -9,8 +9,12 @@ from ..utils.getting_modules import get_name_by_layer
 from dataclasses import dataclass, field
 import torch
 
+
 def laplacian_pyramid_loss(
-    cortical_sheet: TensorType["height", "width", "e"], factor_w: float, factor_h: float, interpolation: str = "bilinear"
+    cortical_sheet: TensorType["height", "width", "e"],
+    factor_w: float,
+    factor_h: float,
+    interpolation: str = "bilinear",
 ):
     grid = cortical_sheet
     assert grid.ndim == 3, "Expected grid to be a 3d tensor of shape (h, w, e)"
@@ -27,7 +31,9 @@ def laplacian_pyramid_loss(
         grid, scale_factor=(1 / factor_h, 1 / factor_w), mode=interpolation
     )
     # Upscale the downscaled grid tensor
-    upscaled_grid = F.interpolate(downscaled_grid, size=grid.shape[2:], mode=interpolation)
+    upscaled_grid = F.interpolate(
+        downscaled_grid, size=grid.shape[2:], mode=interpolation
+    )
 
     # Calculate the MSE loss between the original grid and upscaled grid
     # loss = F.mse_loss(upscaled_grid, grid)
@@ -54,19 +60,30 @@ class LaplacianPyramid:
     scale: Optional[Union[None, float]] = field(default=1.0)
 
     @classmethod
-    def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0, interpolation: str ="bilinear"):
+    def from_layer(
+        cls,
+        model,
+        layer,
+        factor_h,
+        factor_w,
+        scale=1.0,
+        interpolation: str = "bilinear",
+    ):
         layer_name = get_name_by_layer(model=model, layer=layer)
         return cls(
             layer_name=layer_name,
             scale=scale,
             factor_h=factor_h,
             factor_w=factor_w,
-            interpolation=interpolation
+            interpolation=interpolation,
         )
 
 
 def laplacian_pyramid_loss_on_bias(
-    cortical_sheet: TensorType["h", "w"], factor_w: float, factor_h: float, interpolation: str = "bilinear"
+    cortical_sheet: TensorType["h", "w"],
+    factor_w: float,
+    factor_h: float,
+    interpolation: str = "bilinear",
 ):
 
     grid = cortical_sheet
@@ -86,7 +103,9 @@ def laplacian_pyramid_loss_on_bias(
         grid, scale_factor=(1 / factor_h, 1 / factor_w), mode=interpolation
     )
     # Upscale the downscaled grid tensor
-    upscaled_grid = F.interpolate(downscaled_grid, size=grid.shape[2:], mode=interpolation)
+    upscaled_grid = F.interpolate(
+        downscaled_grid, size=grid.shape[2:], mode=interpolation
+    )
 
     grid = rearrange(grid.squeeze(0).squeeze(0), "h w -> (h w)").unsqueeze(0)
     upscaled_grid = rearrange(
@@ -113,7 +132,15 @@ class LaplacianPyramidOnBias:
     scale: Optional[Union[None, float]] = field(default=1.0)
 
     @classmethod
-    def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0, interpolation: str ="bilinear"):
+    def from_layer(
+        cls,
+        model,
+        layer,
+        factor_h,
+        factor_w,
+        scale=1.0,
+        interpolation: str = "bilinear",
+    ):
         assert (
             layer.bias is not None
         ), "Expected layer to have a bias, but got None. *sad sad sad*"
@@ -123,8 +150,9 @@ class LaplacianPyramidOnBias:
             scale=scale,
             factor_h=factor_h,
             factor_w=factor_w,
-            interpolation=interpolation
+            interpolation=interpolation,
         )
+
 
 @dataclass
 class LaplacianPyramidOnInput:
@@ -144,12 +172,20 @@ class LaplacianPyramidOnInput:
     scale: Optional[Union[None, float]] = field(default=1.0)
 
     @classmethod
-    def from_layer(cls, model, layer, factor_h, factor_w, scale=1.0, interpolation: str ="bilinear"):
+    def from_layer(
+        cls,
+        model,
+        layer,
+        factor_h,
+        factor_w,
+        scale=1.0,
+        interpolation: str = "bilinear",
+    ):
         layer_name = get_name_by_layer(model=model, layer=layer)
         return cls(
             layer_name=layer_name,
             scale=scale,
             factor_h=factor_h,
             factor_w=factor_w,
-            interpolation=interpolation
+            interpolation=interpolation,
         )

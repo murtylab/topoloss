@@ -13,7 +13,7 @@ def get_cortical_sheet_linear_input(layer: nn.Linear):
     return rearrange(
         weight,
         "o (h w) -> h w o",
-        h = cortical_sheet_size.height,
-        w = cortical_sheet_size.width,
-        o = weight.shape[0]
+        h=cortical_sheet_size.height,
+        w=cortical_sheet_size.width,
+        o=weight.shape[0],
     )

@@ -10,6 +10,7 @@ supported_dtypes = [
     # torch.bfloat16, ### tests fail on bfloat16
 ]
 
+
 # Define the fixture that provides the num_steps argument
 @pytest.mark.parametrize("num_steps", [2, 9])
 @pytest.mark.parametrize("hidden_size", [30, 25])
