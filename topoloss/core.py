@@ -1,4 +1,3 @@
-from __future__ import annotations 
 import os
 import torch.nn as nn
 from einops import rearrange
@@ -12,26 +11,31 @@ from .losses.laplacian_pyramid import (
     LaplacianPyramid,
     laplacian_pyramid_loss_on_bias,
     LaplacianPyramidOnBias,
-    LaplacianPyramidOnInput
+    LaplacianPyramidOnInput,
 )
 from .cortical_sheet.output import find_cortical_sheet_size
+
 
 class TopoLoss:
     def __init__(
         self,
         losses: list[Union[LaplacianPyramid]],
+        strict_layer_type: bool = True,  ## this is a safety feature to make sure you're not using something other than a conv or linear layer
     ):
         self.losses = losses
+        self.strict_layer_type = strict_layer_type  ## this is a safety feature to make sure you're not using something other than a conv or linear layer
 
     def check_layer_type(self, layer):
-        assert isinstance(layer, nn.Conv2d) or isinstance(layer, nn.Linear), f"Expect layer to be either nn.Conv2d or nn.Linear, but got: {type(layer)}"
-
+        assert isinstance(layer, nn.Conv2d) or isinstance(
+            layer, nn.Linear
+        ), f"Expect layer to be either nn.Conv2d or nn.Linear, but got: {type(layer)}"
 
     def get_layerwise_topo_losses(self, model, do_scaling: bool = True) -> dict:
         layer_wise_losses = {}
         for loss_info in self.losses:
             layer = get_layer_by_name(model=model, layer_name=loss_info.layer_name)
-            self.check_layer_type(layer=layer)
+            if self.strict_layer_type is True:
+                self.check_layer_type(layer=layer)
 
             if isinstance(loss_info, LaplacianPyramid):
                 if isinstance(layer, nn.Linear):
@@ -93,7 +97,9 @@ class TopoLoss:
         return layer_wise_losses
 
     def get_wandb_logging_dict(self, model: nn.Module):
-        layer_wise_losses = self.get_layerwise_topo_losses(do_scaling=False, model=model)
+        layer_wise_losses = self.get_layerwise_topo_losses(
+            do_scaling=False, model=model
+        )
         for key in layer_wise_losses:
             layer_wise_losses[key] = layer_wise_losses[key].item()
 
@@ -118,21 +124,22 @@ class TopoLoss:
         data = []
         for loss in self.losses:
             d = loss.__dict__
-            d['name'] = loss.__class__.__name__
+            d["name"] = loss.__class__.__name__
             data.append(d)
 
         with open(filename, "w") as f:
             json.dump(data, f, indent=4)
-        
+
     @classmethod
     def from_json(cls, filename: str):
         assert os.path.exists(filename), f"File not found: {filename}"
         with open(filename, "r") as f:
             data = json.load(f)
-        assert isinstance(data, list), f"Expected data to be a list but got: {type(data)}"
+        assert isinstance(
+            data, list
+        ), f"Expected data to be a list but got: {type(data)}"
         losses = []
         for d in data:
             name = d.pop("name")
             losses.append(globals()[name](**d))
         return cls(losses=losses)
-        
