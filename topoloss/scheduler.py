@@ -1,4 +1,7 @@
 import math
+import json
+import os
+
 from .core import TopoLoss
 
 valid_modes = ["linear", "cosine_decay"]
@@ -66,6 +69,32 @@ class TauScheduler:
                 print(f"[TauScheduler/{self.mode}] layer: {loss.layer_name} | {loss.scale:.4f} -> {value:.4f} | step {current_step}/{self.num_steps}")
             loss.scale = value
 
+    def save_json(self, filename: str):
+        data = {
+            "start_value": self.start_value,
+            "end_value": self.end_value,
+            "num_steps": self.num_steps,
+            "mode": self.mode,
+        }
+        with open(filename, "w") as f:
+            json.dump(data, f, indent=4)
+        
+
+    @classmethod
+    def from_json(cls, filename: str, topo_loss: TopoLoss, verbose=False):
+        assert isinstance(topo_loss, TopoLoss), f"topo_loss must be an instance of TopoLoss but got {type(topo_loss)}"
+        assert os.path.exists(filename), f"File not found: {filename}"
+        with open(filename, "r") as f:
+            data = json.load(f)
+        return cls(
+            topo_loss=topo_loss,
+            start_value=data["start_value"],
+            end_value=data["end_value"],
+            num_steps=data["num_steps"],
+            mode=data["mode"],
+            verbose=verbose,
+        )
+
 
 class ChainedTauScheduler:
     """Chains multiple TauSchedulers sequentially, mirroring PyTorch's ChainedScheduler pattern."""
@@ -97,3 +126,35 @@ class ChainedTauScheduler:
                 return scheduler.compute_value(remaining)
             remaining -= scheduler.num_steps
         return self.schedulers[-1].compute_value(self.schedulers[-1].num_steps)
+    
+    def save_json(self, filename: str):
+        data = [
+            {
+                "start_value": scheduler.start_value,
+                "end_value": scheduler.end_value,
+                "num_steps": scheduler.num_steps,
+                "mode": scheduler.mode,
+            }
+            for scheduler in self.schedulers
+        ]
+        with open(filename, "w") as f:
+            json.dump(data, f, indent=4)
+
+    @classmethod
+    def from_json(cls, filename: str, topo_loss: TopoLoss, verbose=False):
+        assert os.path.exists(filename), f"File not found: {filename}"
+        with open(filename, "r") as f:
+            data = json.load(f)
+        schedulers = []
+        for item in data:
+            schedulers.append(
+                TauScheduler(
+                    topo_loss=topo_loss,
+                    start_value=item["start_value"],
+                    end_value=item["end_value"],
+                    num_steps=item["num_steps"],
+                    mode=item["mode"],
+                    verbose=verbose,
+                )
+            )
+        return cls(schedulers=schedulers)
