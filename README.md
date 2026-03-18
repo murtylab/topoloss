@@ -37,6 +37,53 @@ loss_dict = topo_loss.compute(model=model, reduce_mean = False) ## {"fc": }
 ## >>> {'fc': tensor(0.8407, grad_fn=<MulBackward0>)}
 ```
 
+## Using $\tau$ schedulers
+
+In order to change the value of tau during training, you can do the following. 
+
+```python
+from topoloss.scheduler import TauScheduler, ChainedTauScheduler
+
+## this is a simple linear warmup
+scheduler = TauScheduler(
+    topo_loss=topo_loss,
+    start_value=0.0,
+    end_value=1.0,
+    num_steps=100,
+    mode="linear",
+    verbose=False,
+)
+
+scheduler.step()
+```
+
+You can also chain different schedulers together, much like what you see in pytorch's [`ChainedScheduler`](https://docs.pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.ChainedScheduler.html)
+
+```python
+
+## linear warmup + cosine decay
+scheduler = ChainedTauScheduler(
+    schedulers=[
+        TauScheduler(
+            topo_loss=topo_loss,
+            start_value=0.0,
+            end_value=1.0,
+            num_steps=100,
+            mode="linear",
+            verbose=False,
+        ),
+        TauScheduler(
+            topo_loss=topo_loss,
+            start_value=1.0,
+            end_value=0.0,
+            num_steps=100,
+            mode="cosine_decay",
+            verbose=False,
+        ),
+    ]
+)
+```
+
 ## Running tests
 
 ```bash
