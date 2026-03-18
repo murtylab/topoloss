@@ -10,7 +10,7 @@ def get_linear_tau(start_value: float, end_value: float, current_step: int, num_
 
 
 def get_cosine_decay_tau(start_value: float, end_value: float, current_step: int, num_steps: int) -> float:
-    assert end_value < start_value, "cosine_decay mode requires end_value < start_value"
+    assert end_value < start_value, f"cosine_decay mode requires end_value < start_value but got start_value={start_value} and end_value={end_value}"
     cosine_decay = 0.5 * (1 + math.cos(math.pi * current_step / num_steps))
     return end_value + (start_value - end_value) * cosine_decay
 
@@ -35,6 +35,9 @@ class TauScheduler:
         self.mode = mode
         self.verbose = verbose
         self.current_step = 0
+
+    def get_current_tau(self) -> float:
+        return self.compute_value(self.current_step)
 
     def compute_value(self, current_step: int) -> float:
         if self.mode == "cosine_decay":
@@ -85,7 +88,7 @@ class ChainedTauScheduler:
             self.schedulers[-1].step(self.schedulers[-1].num_steps)
 
         self.current_step += 1
-        
+
     def get_current_tau(self):
         # Return the current tau value from the active scheduler
         remaining = self.current_step
