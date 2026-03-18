@@ -39,7 +39,7 @@ loss_dict = topo_loss.compute(model=model, reduce_mean = False) ## {"fc": }
 
 ## Using $\tau$ schedulers
 
-In order to change the value of tau during training, you can do the following. 
+In order to change the strength of the topographic constraint (tau) during training, you can do the following. 
 
 ```python
 from topoloss.scheduler import TauScheduler, ChainedTauScheduler
