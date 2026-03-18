@@ -38,7 +38,7 @@ class TopoLoss:
                 self.check_layer_type(layer=layer)
 
             if isinstance(loss_info, LaplacianPyramid):
-                if isinstance(layer, nn.Linear):
+                if isinstance(layer, (nn.Linear, nn.RNN)):
                     cortical_sheet = get_cortical_sheet_linear(layer=layer, strict_layer_type=self.strict_layer_type, custom_weight_attribute_name=loss_info.custom_weight_attribute_name)
                 else:
                     cortical_sheet = get_cortical_sheet_conv(layer=layer, strict_layer_type=self.strict_layer_type, custom_weight_attribute_name=loss_info.custom_weight_attribute_name)
