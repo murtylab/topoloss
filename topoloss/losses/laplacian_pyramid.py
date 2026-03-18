@@ -58,6 +58,7 @@ class LaplacianPyramid:
     factor_w: float
     interpolation: str = "bilinear"
     scale: Optional[Union[None, float]] = field(default=1.0)
+    custom_weight_attribute_name: Optional[Union[None, str]] = field(default=None)
 
     @classmethod
     def from_layer(
@@ -130,6 +131,7 @@ class LaplacianPyramidOnBias:
     factor_w: float
     interpolation: str = "bilinear"
     scale: Optional[Union[None, float]] = field(default=1.0)
+    custom_weight_attribute_name: Optional[Union[None, str]] = field(default=None)
 
     @classmethod
     def from_layer(
